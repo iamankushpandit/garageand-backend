@@ -6,6 +6,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const communityRoutes = require('./routes/community');
 const hostRoutes = require('./routes/host');
+const garageRoutes = require('./routes/garage')
+
 
 app.use(cors());
 app.use(express.json());
@@ -19,3 +21,5 @@ app.listen(PORT, () => {
 });
 app.use('/api/community', communityRoutes);
 app.use('/api/host', hostRoutes)
+app.use('/api/garage', garageRoutes)
+
