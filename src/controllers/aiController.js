@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 
 const generateDescription = async (req, res) => {
-  const { title, condition = 'good' } = req.body
+  const { title, condition = 'good', notes = '' } = req.body
 
   if (!title) {
     return res.status(400).json({
@@ -10,8 +10,8 @@ const generateDescription = async (req, res) => {
     })
   }
 
-  const prompt = `Write a short, friendly product description for a garage sale item titled: "${title}". It's in ${condition} condition.`
-
+  const prompt = `Write a short, friendly product description for a garage sale item titled: "${title}". It's in ${condition} condition.${notes ? ' Notes from seller: ' + notes : ''}`
+  
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
