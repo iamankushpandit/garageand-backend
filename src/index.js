@@ -6,7 +6,9 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const communityRoutes = require('./routes/community');
 const hostRoutes = require('./routes/host');
-const garageRoutes = require('./routes/garage')
+const garageRoutes = require('./routes/garage');
+const reserveRoutes = require('./routes/reserve');
+
 
 
 app.use(cors());
@@ -20,6 +22,6 @@ app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
 app.use('/api/community', communityRoutes);
-app.use('/api/host', hostRoutes)
-app.use('/api/garage', garageRoutes)
-
+app.use('/api/host', hostRoutes);
+app.use('/api/garage', garageRoutes);
+app.use('/api/reserve', reserveRoutes);
