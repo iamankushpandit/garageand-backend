@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const communityRoutes = require('./routes/community');
+
 
 app.use(cors());
 app.use(express.json());
@@ -15,3 +17,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
+app.use('/api/community', communityRoutes);
