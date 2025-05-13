@@ -1,16 +1,12 @@
 const { v4: uuidv4 } = require('uuid')
 
-// In-memory store (can be swapped with DB later)
+// In-memory reservation store
 const reservations = {}
 
 const reserveItem = (req, res) => {
   const { itemId } = req.params
 
-  // Check if item is already reserved
-  if (
-    reservations[itemId] &&
-    reservations[itemId].expiresAt > Date.now()
-  ) {
+  if (reservations[itemId] && reservations[itemId].expiresAt > Date.now()) {
     return res.status(400).json({
       success: false,
       message: 'Item is already reserved',
@@ -18,8 +14,8 @@ const reserveItem = (req, res) => {
   }
 
   const now = Date.now()
-  const expiresAt = now + 15 * 60 * 1000 // 15 mins from now
-  const ticketId = uuidv4().slice(0, 6).toUpperCase() // short + unique
+  const expiresAt = now + 15 * 60 * 1000
+  const ticketId = uuidv4().slice(0, 6).toUpperCase()
 
   reservations[itemId] = {
     reservedAt: now,
@@ -38,4 +34,34 @@ const reserveItem = (req, res) => {
   })
 }
 
-module.exports = { reserveItem }
+const getTicketById = (req, res) => {
+  const { ticketId } = req.params
+
+  const entry = Object.entries(reservations).find(
+    ([, value]) => value.ticketId === ticketId
+  )
+
+  if (!entry) {
+    return res.status(404).json({ success: false, message: 'Ticket not found' })
+  }
+
+  const [itemId, data] = entry
+
+  res.status(200).json({
+    success: true,
+    itemId,
+    ticketId,
+    reservedAt: new Date(data.reservedAt).toISOString(),
+    expiresAt: new Date(data.expiresAt).toISOString(),
+  })
+}
+
+const getAllReservations = (req, res) => {
+  res.status(200).json({ success: true, reservations })
+}
+
+module.exports = {
+  reserveItem,
+  getTicketById,
+  getAllReservations,
+}
