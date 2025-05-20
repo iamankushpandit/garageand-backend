@@ -1,59 +1,67 @@
-const { v4: uuidv4 } = require('uuid')
+// src/db/memory.js
 
-const neighborhoods = []
-const houses = []
-const admins = []
-const garages = []
-const items = []
+const garages = {}
+const items = {}
+const neighborhoods = {}
+const houses = {}
+const admins = new Set()
 
-// ================
-// Neighborhood & House
-// ================
+// ===============================
+// NEIGHBORHOOD & HOUSES
+// ===============================
 const createNeighborhood = async ({ id, name, city, zip_codes }) => {
-  neighborhoods.push({ id, name, city, zip_codes, created_at: new Date() })
+  neighborhoods[id] = { id, name, city, zip_codes, created_at: new Date().toISOString() }
 }
 
 const createHouse = async ({ id, neighborhood_id, address, title, latitude, longitude }) => {
-  houses.push({ id, neighborhood_id, address, title, latitude, longitude, created_at: new Date() })
+  houses[id] = { id, neighborhood_id, address, title, latitude, longitude }
 }
 
 const markHouseAsAdmin = async (houseId) => {
-  admins.push({ house_id: houseId })
+  admins.add(houseId)
 }
 
-// ================
-// Items / Garages
-// ================
+// ===============================
+// ITEMS & GARAGES
+// ===============================
 const getGarageById = async (garageId) => {
-  const garage = garages.find(g => g.id === garageId)
+  const garage = garages[garageId]
   if (!garage) return null
-  const garageItems = items.filter(i => i.garage_id === garageId)
+
+  const garageItems = Object.values(items).filter(item => item.garage_id === garageId)
   return { ...garage, items: garageItems }
 }
 
 const createGarageItem = async (garageId, item) => {
-  const newItem = {
-    id: uuidv4(),
-    garage_id: garageId,
-    title: item.title,
-    price: item.price,
-    is_sold: false,
-    created_at: new Date(),
-  }
-  items.push(newItem)
-  return newItem
+  const id = `item_${Math.random().toString(36).slice(2)}`
+  items[id] = { id, garage_id: garageId, title: item.title, price: item.price, is_sold: false }
+  return items[id]
 }
 
 const updateItem = async (itemId, updates) => {
-  const item = items.find(i => i.id === itemId)
-  if (!item) return null
-  Object.assign(item, updates)
-  return item
+  if (!items[itemId]) return null
+  items[itemId] = { ...items[itemId], ...updates }
+  return items[itemId]
 }
 
 const deleteItem = async (itemId) => {
-  const index = items.findIndex(i => i.id === itemId)
-  if (index !== -1) items.splice(index, 1)
+  delete items[itemId]
+}
+
+// ✅ NEW: Create a garage
+const createGarage = async ({ neighborhood_id, house_id, name, start_date, end_date, join_token }) => {
+  const id = `garage_${Math.random().toString(36).slice(2)}`
+  garages[id] = {
+    id,
+    neighborhood_id,
+    house_id,
+    name,
+    start_date,
+    end_date,
+    join_token,
+    created_at: new Date().toISOString(),
+  }
+  return garages[id]
 }
 
 module.exports = {
@@ -64,4 +72,5 @@ module.exports = {
   createGarageItem,
   updateItem,
   deleteItem,
+  createGarage,
 }

@@ -1,3 +1,5 @@
+// src/db/postgres.js
+
 const { Pool } = require('pg')
 require('dotenv').config()
 
@@ -38,7 +40,7 @@ const markHouseAsAdmin = async (houseId) => {
 }
 
 // ===============================
-// EXISTING FOR ITEMS / GARAGES
+// ITEMS & GARAGES
 // ===============================
 
 const getGarageById = async (garageId) => {
@@ -81,6 +83,16 @@ const deleteItem = async (itemId) => {
   await query('DELETE FROM items WHERE id = $1', [itemId])
 }
 
+// ✅ NEW: Create a garage
+const createGarage = async ({ neighborhood_id, house_id, name, start_date, end_date, join_token }) => {
+  const result = await query(
+    `INSERT INTO garages (neighborhood_id, house_id, name, start_date, end_date, join_token)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [neighborhood_id, house_id, name, start_date, end_date, join_token]
+  )
+  return result[0]
+}
+
 module.exports = {
   query,
   getGarageById,
@@ -90,4 +102,5 @@ module.exports = {
   createNeighborhood,
   createHouse,
   markHouseAsAdmin,
+  createGarage, // ✅ added correctly
 }

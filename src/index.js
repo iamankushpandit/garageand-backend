@@ -12,6 +12,8 @@ const reserveRoutes = require('./routes/reserve');
 const aiRoutes = require('./routes/ai');
 const itemRoutes = require('./routes/items')
 const neighborhoodRoutes = require('./routes/neighborhood')
+const garageSaleRoutes = require('./routes/garageSale');
+
 
 app.use(cors());
 app.use(express.json());
@@ -27,6 +29,8 @@ app.use('/api/reserve', reserveRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/items', itemRoutes)
 app.use('/api/neighborhood', neighborhoodRoutes)
+app.use('/api/garage-sale', garageSaleRoutes);
+
 
 
 
